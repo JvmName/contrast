@@ -10,16 +10,12 @@ standardConfiguration()
 
 kotlin {
     sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+        }
         commonMain {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-            }
-        }
-
-        val androidMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib"))
-                implementation("androidx.recyclerview:recyclerview:1.1.0")
             }
         }
 
@@ -28,8 +24,19 @@ kotlin {
                 implementation(kotlin("stdlib"))
             }
         }
+
+        val androidMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib"))
+                dependsOn(jvmMain)
+                implementation("androidx.recyclerview:recyclerview:1.2.0-alpha03")
+            }
+        }
     }
 
+    android {
+        publishLibraryVariants("release")
+    }
 }
 
 android {

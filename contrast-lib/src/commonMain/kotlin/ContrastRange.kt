@@ -7,4 +7,7 @@ internal class ContrastRange(
     var newListEnd: Int
 ) {
     constructor() : this(0, 0, 0, 0)
+
+    val oldSize: Int get() = oldListEnd - oldListStart
+    val newSize: Int get() = newListEnd - newListStart
 }

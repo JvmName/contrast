@@ -1,5 +1,9 @@
 package dev.jvmname.contrast
 
+import dev.jvmname.contrast.BatchingContrastTarget.Op.ADD
+import dev.jvmname.contrast.BatchingContrastTarget.Op.CHANGE
+import dev.jvmname.contrast.BatchingContrastTarget.Op.NONE
+import dev.jvmname.contrast.BatchingContrastTarget.Op.REMOVE
 import kotlin.math.max
 import kotlin.math.min
 
@@ -11,13 +15,14 @@ interface ContrastTarget {
 }
 
 open class BatchingContrastTarget(private val delegate: ContrastTarget) : ContrastTarget {
-    private var lastEvent: Op = Op.NONE
+    private var lastEvent: Op =
+        NONE
     private var lastPosition = -1
     private var lastCount = -1
     private var lastPayload: Any? = null
 
     override fun onInserted(position: Int, count: Int) {
-        if (lastEvent == Op.ADD
+        if (lastEvent == ADD
             && position >= lastPosition
             && position <= lastPosition + lastCount
         ) {
@@ -25,11 +30,11 @@ open class BatchingContrastTarget(private val delegate: ContrastTarget) : Contra
             lastCount += count
             return
         }
-        setStateAndDispatch(position, count, Op.ADD)
+        setStateAndDispatch(position, count, ADD)
     }
 
     override fun onRemoved(position: Int, count: Int) {
-        if (lastEvent == Op.REMOVE
+        if (lastEvent == REMOVE
             && lastPosition >= position
             && lastPosition <= position + count
         ) {
@@ -37,7 +42,7 @@ open class BatchingContrastTarget(private val delegate: ContrastTarget) : Contra
             lastCount += count
             return
         }
-        setStateAndDispatch(position, count, Op.REMOVE)
+        setStateAndDispatch(position, count, REMOVE)
     }
 
     override fun onMoved(fromPosition: Int, toPosition: Int) {
@@ -46,7 +51,7 @@ open class BatchingContrastTarget(private val delegate: ContrastTarget) : Contra
     }
 
     override fun onChanged(position: Int, count: Int, payload: Any?) {
-        if (lastEvent == Op.CHANGE
+        if (lastEvent == CHANGE
             && !(position > lastPosition + lastCount
                     || position + count < lastPosition
                     || lastPayload != payload)
@@ -57,18 +62,18 @@ open class BatchingContrastTarget(private val delegate: ContrastTarget) : Contra
             return
         }
         lastPayload = payload
-        setStateAndDispatch(position, count, Op.CHANGE)
+        setStateAndDispatch(position, count, CHANGE)
     }
 
     fun dispatchEvent() {
         when (lastEvent) {
-            Op.NONE -> return
-            Op.ADD -> delegate.onInserted(lastPosition, lastCount)
-            Op.REMOVE -> delegate.onRemoved(lastPosition, lastCount)
-            Op.CHANGE -> delegate.onChanged(lastPosition, lastCount, lastPayload)
+            NONE -> return
+            ADD -> delegate.onInserted(lastPosition, lastCount)
+            REMOVE -> delegate.onRemoved(lastPosition, lastCount)
+            CHANGE -> delegate.onChanged(lastPosition, lastCount, lastPayload)
         }
         lastPayload = null
-        lastEvent = Op.NONE
+        lastEvent = NONE
     }
 
     internal open fun notifyCompleted() {

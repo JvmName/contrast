@@ -14,6 +14,7 @@ allprojects {
         pluginManager.withPlugin("kotlin-multiplatform") {
             val kotlinExtension = project.extensions.getByName("kotlin") as KotlinMultiplatformExtension
             val uniqueName = "${project.group}.${project.name}"
+
             kotlinExtension.targets.withType(KotlinNativeTarget::class.java) {
                 compilations["main"].kotlinOptions.freeCompilerArgs += listOf("-module-name", uniqueName)
             }
