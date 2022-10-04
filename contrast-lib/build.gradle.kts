@@ -18,6 +18,14 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
             }
         }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+                implementation("org.amshove.kluent:kluent:1.61")
+                implementation("io.mockk:mockk-common:1.10.0")
+            }
+        }
 
         val jvmMain by getting {
             dependencies {
